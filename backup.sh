@@ -107,15 +107,15 @@ fi
 
 mkdir $BACKUP_FOLDER
 
-# On vérifie que le fichier .excluded-files existe bien
-if [ ! -f .excluded-files ]; then
-    echo -e "\n${CRED}/!\ ERREUR: Le fichier${CEND} ${CPURPLE}.excluded-files${CEND} ${CRED}n'existe pas !${CEND}" | tee -a $LOG_FILE
+# On vérifie que le fichier .excluded-paths existe bien
+if [ ! -f .excluded-paths ]; then
+    echo -e "\n${CRED}/!\ ERREUR: Le fichier${CEND} ${CPURPLE}.excluded-paths${CEND} ${CRED}n'existe pas !${CEND}" | tee -a $LOG_FILE
     echo -e "" | tee -a $LOG_FILE
     exit 1
 fi
 
 echo -n "> Compression des fichiers système" | tee -a $LOG_FILE
-tar --warning=none -cpPzf $ARCHIVE --one-file-system --exclude-from=.excluded-files / /var /home 2> $ERROR_FILE
+tar --warning=none -cpPzf $ARCHIVE --one-file-system --exclude-from=.excluded-paths / /var /home 2> $ERROR_FILE
 
 # Si une erreur survient lors de la compression
 if [ -s $ERROR_FILE ]; then
