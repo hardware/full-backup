@@ -184,7 +184,7 @@ if [ $nbBackup -gt $NB_MAX_BACKUP ]; then
     # Supprime le répertoire du backup
     rm -rf $oldestBackupPath
 
-    # Supprime l'archiven du fichier de signature et de la clé publique sur le serveur FTP
+    # Supprime l'archive, le fichier de signature et la clé publique sur le serveur FTP
     lftp -e "rm $oldestBackupFile.tar.gz;bye"     -u $USER,$PASSWD -p $PORT $HOST > /dev/null 2>&1
     lftp -e "rm $oldestBackupFile.tar.gz.sig;bye" -u $USER,$PASSWD -p $PORT $HOST > /dev/null 2>&1
     lftp -e "rm $oldestBackupFile.tar.gz.pub;bye" -u $USER,$PASSWD -p $PORT $HOST > /dev/null 2>&1

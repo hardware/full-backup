@@ -131,7 +131,7 @@ echo -e " ${CGREEN}Connexion au serveur FTP [OK]${CEND}"
 
 echo ""
 read -p "> Veuillez saisir votre adresse email : " EMAIL
-read -p "> Combien d'archives voulez garder au maximum ? [Par défaut: 10] " NBACKUPS
+read -p "> Combien d'archives voulez-vous garder au maximum ? [Par défaut: 10] " NBACKUPS
 
 if [ "$PORT" = "" ]; then
     NBACKUPS=10
