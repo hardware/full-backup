@@ -133,7 +133,7 @@ echo ""
 read -p "> Veuillez saisir votre adresse email : " EMAIL
 read -p "> Combien d'archives voulez-vous garder au maximum ? [Par défaut: 10] " NBACKUPS
 
-if [ "$PORT" = "" ]; then
+if [ "$NBACKUPS" = "" ]; then
     NBACKUPS=10
 fi
 
