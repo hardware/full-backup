@@ -230,15 +230,15 @@ if [[ "$CREATEKEY" = "o" ]] || [[ "$CREATEKEY" = "O" ]]; then
     else
         echo -e "\n${CRED}/!\ Erreur: Une erreur est survenue pendant la création de vos clés GPG.${CEND}\n" 1>&2
     fi
-
-    read -sp "> Veuillez saisir le mot de passe de votre clé privée : " GPGPASSWD
-
-    echo -e "\n"
-    echo -n "Création du fichier .gpg-passwd"
-    echo "$GPGPASSWD" > .gpg-passwd
-    chmod 600 .gpg-passwd
-    echo -e " ${CGREEN}[OK]${CEND}"
 fi
+
+read -sp "> Veuillez saisir le mot de passe de votre clé privée : " GPGPASSWD
+
+echo -e "\n"
+echo -n "Création du fichier .gpg-passwd"
+echo "$GPGPASSWD" > .gpg-passwd
+chmod 600 .gpg-passwd
+echo -e " ${CGREEN}[OK]${CEND}"
 
 echo ""
 echo -e "${CCYAN}-----------------${CEND}"

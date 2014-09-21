@@ -177,8 +177,6 @@ remoteRestoration() {
     echo -e "\nAppuyer sur ${CCYAN}[ENTREE]${CEND} pour démarrer la restauration ou CTRL+C pour quitter..."
     read
 
-    lftp -e "ls; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE
-
     echo "> Récupération de l'archive depuis le serveur FTP"
     downloadFromRemoteServer $ARCHIVE
 
