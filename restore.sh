@@ -133,6 +133,11 @@ backupList() {
     local i=0
     local n=""
 
+    if [ ! -d /var/backup/local ]; then
+        echo -e "\n${CRED}/!\ ERREUR: Aucune sauvegarde locale existante.${CEND}\n" 1>&2
+        exit 1
+    fi
+
     echo -e "\n Liste des archives disponibles :"
 
     for backup in ${backups[*]}; do
@@ -156,7 +161,12 @@ backupList() {
 
 remoteRestoration() {
 
+    echo -e "\n${CCYAN}Liste des archives disponibles :${CEND}"
+    echo -e "${CCYAN}-----------------------------------------------------------------------------------------${CEND}"
+    lftp -d -e "ls *.tar.gz; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE
+    echo -e "${CCYAN}-----------------------------------------------------------------------------------------${CEND}"
     echo ""
+
     read -p "Veuillez saisir le nom de l'archive à récupérer : " ARCHIVE
 
     echo ""
@@ -166,6 +176,8 @@ remoteRestoration() {
 
     echo -e "\nAppuyer sur ${CCYAN}[ENTREE]${CEND} pour démarrer la restauration ou CTRL+C pour quitter..."
     read
+
+    lftp -e "ls; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE
 
     echo "> Récupération de l'archive depuis le serveur FTP"
     downloadFromRemoteServer $ARCHIVE

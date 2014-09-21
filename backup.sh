@@ -20,7 +20,7 @@ PORT=
 # --------------------------------------------------------------------
 
 CDAY=$(date +%d%m%Y-%H%M)
-NB_MAX_BACKUP=10
+NB_MAX_BACKUP=
 BACKUP_PARTITION=/var/backup/local
 BACKUP_FOLDER=$BACKUP_PARTITION/backup-$CDAY
 ERROR_FILE=$BACKUP_FOLDER/errors.log
@@ -97,7 +97,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-if [ ! -d $MONITORING_FOLDER ]; then
+if [ ! -d $BACKUP_PARTITION ]; then
     mkdir -p $BACKUP_PARTITION > /dev/null 2>&1
 fi
 

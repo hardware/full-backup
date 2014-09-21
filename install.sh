@@ -131,6 +131,11 @@ echo -e " ${CGREEN}Connexion au serveur FTP [OK]${CEND}"
 
 echo ""
 read -p "> Veuillez saisir votre adresse email : " EMAIL
+read -p "> Combien d'archives voulez garder au maximum ? [Par défaut: 10] " NBACKUPS
+
+if [ "$PORT" = "" ]; then
+    NBACKUPS=10
+fi
 
 # On échappe les caractères spéciaux dans l'URL
 HOST_ESCP=$(echo $HOST | sed -e 's/[]\/$*.^|[]/\\&/g')
@@ -140,7 +145,8 @@ echo -n "Ajout des paramètres de connexion au serveur FTP"
 sed -i -e "s/\(HOST=\).*/\1'$HOST_ESCP'/" \
        -e "s/\(USER=\).*/\1'$USER'/"      \
        -e "s/\(PASSWD=\).*/\1'$PASSWD'/"  \
-       -e "s/\(PORT=\).*/\1'$PORT'/" backup.sh restore.sh
+       -e "s/\(PORT=\).*/\1$PORT/"        \
+       -e "s/\(NB_MAX_BACKUP=\).*/\1$NBACKUPS/" backup.sh restore.sh
 
 # Ajout de l'adresse email de reporting
 sed -i "s/\(REPORTING_EMAIL=\).*/\1$EMAIL/" backup.sh restore.sh
@@ -157,6 +163,10 @@ echo ""
 read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
 
 if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
+
+    # Exclusion des répertoires par défaut
+    echo "/var/cache" >> .excluded-paths
+    echo "/var/backup" >> .excluded-paths
 
     echo -e "\nEntrez ${CPURPLE}STOP${CEND} pour arrêter la saisie.\n"
 
@@ -223,7 +233,7 @@ if [[ "$CREATEKEY" = "o" ]] || [[ "$CREATEKEY" = "O" ]]; then
 
     read -sp "> Veuillez saisir le mot de passe de votre clé privée : " GPGPASSWD
 
-    echo "\n"
+    echo -e "\n"
     echo -n "Création du fichier .gpg-passwd"
     echo "$GPGPASSWD" > .gpg-passwd
     chmod 600 .gpg-passwd
