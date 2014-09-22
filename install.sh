@@ -164,8 +164,8 @@ read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLU
 if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
 
     # Exclusion des répertoires par défaut
-    echo "/var/cache" >> .excluded-paths
-    echo "/var/backup" >> .excluded-paths
+    echo "/var/cache" >> /opt/full-backup/.excluded-paths
+    echo "/var/backup" >> /opt/full-backup/.excluded-paths
 
     echo -e "\nEntrez ${CPURPLE}STOP${CEND} pour arrêter la saisie.\n"
 
@@ -181,12 +181,12 @@ if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
             continue
         fi
 
-        echo "$EXCLUDEPATH" >> .excluded-paths
+        echo "$EXCLUDEPATH" >> /opt/full-backup/.excluded-paths
     done
 
     echo -e "\nLes répertoires/fichiers suivants ne seront pas inclus dans la sauvegarde :\n"
     echo -e "${CGREEN}-----------------EXCLUSION--------------------${CEND}"
-    cat .excluded-paths
+    cat /opt/full-backup/.excluded-paths
     echo -e "${CGREEN}----------------------------------------------${CEND}"
 
 fi
@@ -235,8 +235,8 @@ read -sp "> Veuillez saisir le mot de passe de votre clé privée : " GPGPASSWD
 
 echo -e "\n"
 echo -n "Création du fichier .gpg-passwd"
-echo "$GPGPASSWD" > .gpg-passwd
-chmod 600 .gpg-passwd
+echo "$GPGPASSWD" > /opt/full-backup/.gpg-passwd
+chmod 600 /opt/full-backup/.gpg-passwd
 echo -e " ${CGREEN}[OK]${CEND}"
 
 echo ""
