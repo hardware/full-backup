@@ -203,6 +203,13 @@ localRestoration() {
 
 ##################################################
 
+if [[ $EUID -ne 0 ]]; then
+    echo ""
+    echo -e "${CRED}/!\ ERREUR: Vous devez être connecté en tant que root pour pouvoir exécuter ce script.${CEND}" 1>&2
+    echo ""
+    exit 1
+fi
+
 clear
 
 echo ""
@@ -212,12 +219,6 @@ echo -e "${CCYAN}          DEMARRAGE DU SCRIPT DE RESTAURATION            ${CEND
 echo ""
 echo -e "${CCYAN}#########################################################${CEND}"
 echo ""
-
-if [[ $EUID -ne 0 ]]; then
-   echo -e "${CRED}/!\ ERREUR: Vous devez être connecté en tant que root pour pouvoir exécuter ce script.${CEND}" 1>&2
-   echo ""
-   exit 1
-fi
 
 echo "Choisir le type de restauration :"
 echo "  1. Distante"

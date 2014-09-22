@@ -83,6 +83,13 @@ sendmail $REPORTING_EMAIL < /tmp/reporting.txt
 
 ##################################################
 
+if [[ $EUID -ne 0 ]]; then
+    echo ""
+    echo -e "${CRED}/!\ ERREUR: Vous devez être connecté en tant que root pour pouvoir exécuter ce script.${CEND}" 1>&2
+    echo ""
+    exit 1
+fi
+
 echo "" | tee -a $LOG_FILE
 echo -e "${CCYAN}###################################################${CEND}" | tee -a $LOG_FILE
 echo "" | tee -a $LOG_FILE
@@ -90,12 +97,6 @@ echo -e "${CCYAN}          DEMARRAGE DU SCRIPT DE BACKUP            ${CEND}" | t
 echo "" | tee -a $LOG_FILE
 echo -e "${CCYAN}###################################################${CEND}" | tee -a $LOG_FILE
 echo "" | tee -a $LOG_FILE
-
-if [[ $EUID -ne 0 ]]; then
-   echo -e "${CRED}/!\ ERREUR: Vous devez être connecté en tant que root pour pouvoir exécuter ce script.${CEND}" 1>&2
-   echo ""
-   exit 1
-fi
 
 if [ ! -d $BACKUP_PARTITION ]; then
     mkdir -p $BACKUP_PARTITION > /dev/null 2>&1

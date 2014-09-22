@@ -21,14 +21,6 @@ CBROWN="${CSI}0;33m"
 
 # ##########################################################################
 
-if [[ $EUID -ne 0 ]]; then
-   echo -e "${CRED}/!\ ERREUR: Vous devez être connecté en tant que root pour pouvoir exécuter ce script.${CEND}" 1>&2
-   echo ""
-   exit 1
-fi
-
-# ##########################################################################
-
 smallLoader() {
     echo ""
     echo ""
@@ -45,6 +37,13 @@ smallLoader() {
 }
 
 # ##########################################################################
+
+if [[ $EUID -ne 0 ]]; then
+    echo ""
+    echo -e "${CRED}/!\ ERREUR: Vous devez être connecté en tant que root pour pouvoir exécuter ce script.${CEND}" 1>&2
+    echo ""
+    exit 1
+fi
 
 clear
 
