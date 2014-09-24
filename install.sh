@@ -161,11 +161,11 @@ echo ""
 
 read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
 
-if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
+# Exclusion des répertoires par défaut
+echo "/var/cache" >> /opt/full-backup/.excluded-paths
+echo "/var/backup" >> /opt/full-backup/.excluded-paths
 
-    # Exclusion des répertoires par défaut
-    echo "/var/cache" >> /opt/full-backup/.excluded-paths
-    echo "/var/backup" >> /opt/full-backup/.excluded-paths
+if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
 
     echo -e "\nEntrez ${CPURPLE}STOP${CEND} pour arrêter la saisie.\n"
 
