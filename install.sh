@@ -159,6 +159,7 @@ echo -e "${CCYAN}[  EXCLUSION DE FICHIERS/RÉPERTOIRES  ]${CEND}"
 echo -e "${CCYAN}---------------------------------------${CEND}"
 echo ""
 
+touch /opt/full-backup/.excluded-paths
 read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
 
 if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
