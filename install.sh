@@ -113,7 +113,7 @@ echo -n "Test de connexion en cours..."
 
 until lftp -d -e "ls; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
 do
-    cat $FTP_FILE | grep -i "150\(.*\)accepted data connection"
+    cat $FTP_FILE | grep -i "150\(.*\)connection"
 
     if [ $? -eq 0 ]; then
         break
