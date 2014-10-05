@@ -177,11 +177,11 @@ nbBackup=$(find $BACKUP_PARTITION -type d -name 'backup-*' | wc -l)
 
 if [ $nbBackup -gt $NB_MAX_BACKUP ]; then
 
-    echo -n "> Suppression de l'archive la plus ancienne" | tee -a $LOG_FILE
-
     # Recherche l'archive la plus ancienne
     oldestBackupPath=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1)
     oldestBackupFile=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1 | awk '{split($0,a,/\//); print a[5]}')
+
+    echo -en "> Suppression de l'archive la plus ancienne (${CPURPLE}$oldestBackupFile.tar.gz${CEND})" | tee -a $LOG_FILE
 
     # Supprime le répertoire du backup
     rm -rf $oldestBackupPath
