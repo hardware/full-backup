@@ -46,7 +46,7 @@ uploadToRemoteServer() {
 # La commande ftp n'est pas compatible avec SSL/TLS donc on utilise lftp à la place
 lftp -d -e "lcd $BACKUP_FOLDER;put backup-$CDAY.tar.gz;put backup-$CDAY.tar.gz.sig;put backup-$CDAY.tar.gz.pub; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
 
-FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226\(-.*\)file successfully transferred" | wc -l)
+FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226\(.*\)transfer" | wc -l)
 
 # On vérifie que les 3 fichiers ont bien été transférés
 if [[ $FILES_TRANSFERRED -eq 3 ]]; then
@@ -180,15 +180,26 @@ if [ $nbBackup -gt $NB_MAX_BACKUP ]; then
 
     # Recherche l'archive la plus ancienne
     oldestBackupPath=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1)
-    oldestBackupFile=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1 | awk '{split($0,a,/\//); print a[4]}')
+    oldestBackupFile=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1 | awk '{split($0,a,/\//); print a[5]}')
 
     # Supprime le répertoire du backup
     rm -rf $oldestBackupPath
 
     # Supprime l'archive, le fichier de signature et la clé publique sur le serveur FTP
-    lftp -e "rm $oldestBackupFile.tar.gz;bye"     -u $USER,$PASSWD -p $PORT $HOST > /dev/null 2>&1
-    lftp -e "rm $oldestBackupFile.tar.gz.sig;bye" -u $USER,$PASSWD -p $PORT $HOST > /dev/null 2>&1
-    lftp -e "rm $oldestBackupFile.tar.gz.pub;bye" -u $USER,$PASSWD -p $PORT $HOST > /dev/null 2>&1
+    lftp -d -e "rm $oldestBackupFile.tar.gz;bye"     -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
+    lftp -d -e "rm $oldestBackupFile.tar.gz.sig;bye" -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
+    lftp -d -e "rm $oldestBackupFile.tar.gz.pub;bye" -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
+
+    FILES_REMOVED=$(cat $FTP_FILE | grep -i "250\(.*\)delete" | wc -l)
+
+    # On vérifie que les 3 fichiers ont bien été supprimés
+    if [[ $FILES_REMOVED -ne 3 ]]; then
+        MESSAGE="Une erreur est survenue lors de la suppression de la sauvegarde le serveur FTP."
+        echo -e "\n${CRED}/!\ ERREUR: ${MESSAGE}${CEND}" | tee -a $LOG_FILE
+        echo "" | tee -a $LOG_FILE
+        sendErrorMail $FTP_FILE $MESSAGE
+        exit 1
+    fi
 
     echo -e " ${CGREEN}[OK]${CEND}" | tee -a $LOG_FILE
 fi
