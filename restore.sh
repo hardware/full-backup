@@ -280,6 +280,25 @@ rm -rf $ERROR_FILE
 rm -rf $FTP_FILE
 
 echo ""
+echo -e "${CGREEN}Le serveur va redémarrer automatiquement dans quelques secondes mais ${CEND}"
+echo -e "${CGREEN}peut-être que vous souhaitez modifier certains fichiers (/etc/fstab par exemple)${CEND}"
+echo -e "${CGREEN}nécessaires pour que le serveur redémarre correctement.${CEND}"
+echo ""
+
+read -p "Voulez-vous redémarrer maintenant ? (o/n) " REBOOTNOW
+
+if [[ "$REBOOTNOW" != "o" ]] || [[ "$REBOOTNOW" != "O" ]]; then
+
+    echo ""
+    echo -e "${CCYAN}-----------------${CEND}"
+    echo -e "${CCYAN}[ FIN DU SCRIPT ]${CEND}"
+    echo -e "${CCYAN}-----------------${CEND}"
+
+    exit 0
+
+fi
+
+echo ""
 echo -e "${CYELLOW}-----------------------------------------${CEND}"
 echo -e "${CYELLOW} Redémarrage du système dans 10 secondes ${CEND}"
 echo -e "${CYELLOW}-----------------------------------------${CEND}"
