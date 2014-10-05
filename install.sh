@@ -239,6 +239,10 @@ echo "$GPGPASSWD" > /opt/full-backup/.gpg-passwd
 chmod 600 /opt/full-backup/.gpg-passwd
 echo -e " ${CGREEN}[OK]${CEND}"
 
+# Suppression des fichiers de log
+rm -rf $ERROR_FILE
+rm -rf $FTP_FILE
+
 echo ""
 echo -e "${CCYAN}-----------------${CEND}"
 echo -e "${CCYAN}[ FIN DU SCRIPT ]${CEND}"
