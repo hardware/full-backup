@@ -91,6 +91,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 echo "" | tee -a $LOG_FILE
+echo -e "${CCYAN}                `date "+%d/%m/%Y à %Hh%M"`         ${CEND}" | tee -a $LOG_FILE
 echo -e "${CCYAN}###################################################${CEND}" | tee -a $LOG_FILE
 echo "" | tee -a $LOG_FILE
 echo -e "${CCYAN}          DEMARRAGE DU SCRIPT DE BACKUP            ${CEND}" | tee -a $LOG_FILE
