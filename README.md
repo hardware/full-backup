@@ -17,6 +17,14 @@ cd full-backup
 chmod +x *.sh && ./install.sh
 ```
 
+### Mise à jour
+
+**ATTENTION** : Pensez à mettre à jour les scripts régulièrement avec la commande suivante (Ne faites pas un simple git pull sinon vous allez devoir refaire l'installation...) :
+
+```bash
+cd /opt/full-backup && git stash && git pull && git stash pop
+```
+
 ### Support
 
 Si vous avez une question, une remarque ou une suggestion, n'hésitez pas à poster un commentaire sur ce topic : http://mondedie.fr/viewtopic.php?pid=13088
