@@ -264,6 +264,8 @@ done
 
 echo -e "\n"
 echo -e "Vérification des paramètres GPG ${CGREEN}[OK]${CEND}"
+sed -i "s/\(KEYID=\).*/\1'$KEYID'/" backup.sh
+
 echo -n "Création du fichier .gpg-passwd"
 echo "$KEYPASSWD" > /opt/full-backup/.gpg-passwd
 chmod 600 /opt/full-backup/.gpg-passwd

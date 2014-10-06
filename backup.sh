@@ -17,6 +17,9 @@ HOST=''
 USER=''
 PASSWD=''
 PORT=
+
+# Identifiant de la clé GPG
+KEYID=''
 # --------------------------------------------------------------------
 
 CDAY=$(date +%d%m%Y-%H%M)
@@ -136,7 +139,7 @@ if [ ! -f /opt/full-backup/.gpg-passwd ]; then
     exit 1
 fi
 
-gpg --export --armor 2>&1 > /dev/null | fgrep -q "WARNING: nothing exported"
+gpg --export --armor --local-user $KEYID 2>&1 > /dev/null | fgrep -q "WARNING: nothing exported"
 
 # On vérifie que la paire de clé publique / clé privée a bien créée
 if [ $? -eq 0 ]; then
@@ -149,9 +152,9 @@ fi
 
 echo -n "> Création de la signature de l'archive" | tee -a $LOG_FILE
 # Exportation de la clé publique
-gpg --export --armor > $ARCHIVE.pub
+gpg --export --armor --local-user $KEYID > $ARCHIVE.pub
 # Création de la signature
-gpg --yes --batch --no-tty --passphrase-file=/opt/full-backup/.gpg-passwd --detach-sign $ARCHIVE
+gpg --yes --batch --no-tty --local-user $KEYID --passphrase-file=/opt/full-backup/.gpg-passwd --detach-sign $ARCHIVE
 
 echo -e " ${CGREEN}[OK]${CEND}" | tee -a $LOG_FILE
 
