@@ -121,7 +121,7 @@ do
 
     echo ""
     echo -e "${CRED}/!\ Erreur: Un problème est survenu lors de la connexion au serveur FTP.${CEND}" 1>&2
-    echo -e "${CRED}/!\ Erreur: Merci de re-saisir les paramètres de connexion.${CEND}" 1>&2
+    echo -e "${CRED}/!\ Erreur: Merci de re-saisir les paramètres de connexion :${CEND}" 1>&2
     echo ""
     getCredentials
     echo ""
@@ -162,7 +162,7 @@ echo ""
 read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
 
 # Exclusion des répertoires par défaut
-echo "/var/cache" >> /opt/full-backup/.excluded-paths
+echo "/var/cache" > /opt/full-backup/.excluded-paths
 echo "/var/backup" >> /opt/full-backup/.excluded-paths
 
 if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
@@ -232,9 +232,9 @@ fi
 
 echo ""
 echo -e "${CCYAN}Liste de vos clés GPG :${CEND}"
-echo -e "${CCYAN}--------------------------------------------------------------------------${CEND}"
-gpg --list-keys --with-fingerprint
-echo -e "${CCYAN}--------------------------------------------------------------------------${CEND}"
+echo -e "${CCYAN}------------------------------------------${CEND}"
+gpg --list-keys --with-fingerprint --keyid-format 0xlong | grep -i "pub\(.*\)0x\(.*\)"
+echo -e "${CCYAN}------------------------------------------${CEND}"
 echo ""
 
 getGPGCredentials() {
@@ -262,9 +262,8 @@ do
     echo ""
 done
 
-echo ""
+echo -e "\n"
 echo -e "Vérification des paramètres GPG ${CGREEN}[OK]${CEND}"
-echo ""
 echo -n "Création du fichier .gpg-passwd"
 echo "$KEYPASSWD" > /opt/full-backup/.gpg-passwd
 chmod 600 /opt/full-backup/.gpg-passwd
