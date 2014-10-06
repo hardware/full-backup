@@ -139,6 +139,12 @@ if [ ! -f /opt/full-backup/.gpg-passwd ]; then
     exit 1
 fi
 
+if [ "$KEYID" = "" ]; then
+    echo -e "\n${CRED}/!\ ERREUR: La variable KEYID n'est pas définie.${CEND}" | tee -a $LOG_FILE
+    echo -e "" | tee -a $LOG_FILE
+    exit 1
+fi
+
 gpg --export --armor --local-user $KEYID 2>&1 > /dev/null | fgrep -q "WARNING: nothing exported"
 
 # On vérifie que la paire de clé publique / clé privée a bien créée
