@@ -17,9 +17,6 @@ HOST=''
 USER=''
 PASSWD=''
 PORT=
-
-# Identifiant de la clé GPG
-KEYID=''
 # --------------------------------------------------------------------
 
 CDAY=$(date +%d%m%Y-%H%M)
@@ -30,6 +27,9 @@ ERROR_FILE=$BACKUP_FOLDER/errors.log
 FTP_FILE=$BACKUP_FOLDER/ftp.log
 ARCHIVE=$BACKUP_FOLDER/backup-$CDAY.tar.gz
 LOG_FILE=/var/log/backup.log
+
+# Identifiant de la clé GPG
+KEYID=''
 
 # Définition des variables de couleurs
 CSI="\033["
