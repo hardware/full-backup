@@ -225,17 +225,48 @@ if [[ "$CREATEKEY" = "o" ]] || [[ "$CREATEKEY" = "O" ]]; then
 
     if [ $? -eq 0 ]; then
         echo -e "\n${CGREEN}Vos clés GPG ont été générées avec succès !${CEND}\n"
-        gpg --list-keys --with-fingerprint
     else
         echo -e "\n${CRED}/!\ Erreur: Une erreur est survenue pendant la création de vos clés GPG.${CEND}\n" 1>&2
     fi
 fi
 
-read -sp "> Veuillez saisir le mot de passe de votre clé privée : " GPGPASSWD
+echo ""
+echo -e "${CCYAN}Liste de vos clés GPG :${CEND}"
+echo -e "${CCYAN}--------------------------------------------------------------------------${CEND}"
+gpg --list-keys --with-fingerprint
+echo -e "${CCYAN}--------------------------------------------------------------------------${CEND}"
+echo ""
 
-echo -e "\n"
+getGPGCredentials() {
+    read  -p "> Veuillez saisir l'identifiant de votre clé (0x...) : " KEYID
+    read -sp "> Veuillez saisir le mot de passe : " KEYPASSWD
+}
+
+getGPGCredentials
+
+# On test la clé et la passphrase
+until echo "AuthTest" | gpg --no-use-agent           \
+                            -o /dev/null             \
+                            --local-user $KEYID      \
+                            --yes                    \
+                            --batch                  \
+                            --no-tty                 \
+                            --passphrase $KEYPASSWD  \
+                            -as - > /dev/null 2>&1
+do
+    echo ""
+    echo -e "${CRED}/!\ Erreur: Clé inconnue ou mot de passe incorrect.${CEND}" 1>&2
+    echo -e "${CRED}/!\ Merci de re-saisir les paramètres GPG :${CEND}" 1>&2
+    echo ""
+    getGPGCredentials
+    echo ""
+done
+
+echo ""
+echo -e "Vérification des paramètres GPG ${CGREEN}[OK]${CEND}"
+echo ""
 echo -n "Création du fichier .gpg-passwd"
-echo "$GPGPASSWD" > /opt/full-backup/.gpg-passwd
+echo "$KEYPASSWD" > /opt/full-backup/.gpg-passwd
 chmod 600 /opt/full-backup/.gpg-passwd
 echo -e " ${CGREEN}[OK]${CEND}"
 
