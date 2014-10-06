@@ -106,7 +106,7 @@ getCredentials() {
 
 getCredentials
 
-echo "set ssl:verify-certificate false" >> ~/.lftprc
+echo "set ssl:verify-certificate false" > ~/.lftprc
 
 echo -e ""
 echo -n "Test de connexion en cours..."
