@@ -249,7 +249,7 @@ while [[ $EXIT -eq 0 ]]; do
 done
 
 echo "> Décompression de l'archive à la racine du système"
-tar --warning=none -xpPzf $ARCHIVE -C / --numeric-owner 2> $ERROR_FILE
+tar --warning=none -xpPzf $ARCHIVE --exclude=/boot -C / --numeric-owner 2> $ERROR_FILE
 
 if [ -s $ERROR_FILE ]; then
     echo -e "\n${CRED}/!\ ERREUR: Echec de la décompression de l'archive.${CEND}"
