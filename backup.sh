@@ -217,10 +217,10 @@ if [ $nbBackup -gt $NB_MAX_BACKUP ]; then
 
     # On vérifie que les 3 fichiers ont bien été supprimés
     if [[ $FILES_REMOVED -ne 3 ]]; then
-        MESSAGE="Une erreur est survenue lors de la suppression de la sauvegarde le serveur FTP."
+        MESSAGE="Echec lors de la suppression de la sauvegarde le serveur FTP."
         echo -e "\n${CRED}/!\ ERREUR: ${MESSAGE}${CEND}" | tee -a $LOG_FILE
         echo "" | tee -a $LOG_FILE
-        sendErrorMail $FTP_FILE $MESSAGE
+        sendErrorMail $FTP_FILE "$MESSAGE"
         exit 1
     fi
 
