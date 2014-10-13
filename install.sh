@@ -162,8 +162,18 @@ echo ""
 read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
 
 # Exclusion des répertoires par défaut
-echo "/var/cache" > /opt/full-backup/.excluded-paths
-echo "/var/backup" >> /opt/full-backup/.excluded-paths
+cat > /opt/full-backup/.excluded-paths <<EOF
+/dev
+/lost+found
+/media
+/mnt
+/proc
+/run
+/sys
+/tmp
+/var/cache
+/var/backup
+EOF
 
 if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
 

@@ -120,7 +120,7 @@ if [ ! -f /opt/full-backup/.excluded-paths ]; then
 fi
 
 echo -n "> Compression des fichiers système" | tee -a $LOG_FILE
-tar --warning=none -cpPzf $ARCHIVE --one-file-system --exclude-from=/opt/full-backup/.excluded-paths / /var /home 2> $ERROR_FILE
+tar --warning=none -cpPzf $ARCHIVE --exclude-from=/opt/full-backup/.excluded-paths / 2> $ERROR_FILE
 
 # Si une erreur survient lors de la compression
 if [ -s $ERROR_FILE ]; then
