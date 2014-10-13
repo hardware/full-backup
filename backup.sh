@@ -134,15 +134,15 @@ echo -e " ${CGREEN}[OK]${CEND}" | tee -a $LOG_FILE
 
 # Récupère la taille de l'archive en octets
 SIZE=$(wc -c $ARCHIVE | cut -f 1 -d ' ')
-HUMANSIZE=$(echo ${SIZE} | awk '{ sum=$1 ; hum[1024**3]="Go";hum[1024**2]="Mo";hum[1024]="Ko"; \
-            for (x=1024**3; x>=1024; x/=1024){ if (sum>=x) { printf "%.2f %s\n",sum/x,hum[x];break } }}')
+# HUMANSIZE=$(echo ${SIZE} | awk '{ sum=$1 ; hum[1024**3]="Go";hum[1024**2]="Mo";hum[1024]="Ko"; \
+#             for (x=1024**3; x>=1024; x/=1024){ if (sum>=x) { printf "%.2f %s\n",sum/x,hum[x];break } }}')
 
 # 2147483648 = 2GB = 2Go
 if [ $SIZE -gt 2147483648 ]; then
-    echo -e "\n${CRED}/!\ ATTENTION: L'archive est très volumineuse ( $HUMANSIZE )${CEND}" | tee -a $LOG_FILE
+    echo -e "\n${CRED}/!\ ATTENTION: L'archive est très volumineuse.${CEND}" | tee -a $LOG_FILE
     echo -e "\n${CRED}/!\ Vous devriez exclure d'avantage de répertoires dans le fichier d'exclusion.${CEND}" | tee -a $LOG_FILE
     echo -e "" | tee -a $LOG_FILE
-    sendErrorMail "Archive trop volumineuse ( $HUMANSIZE ), merci de vérifier le fichier d'exclusion."
+    sendErrorMail "Archive trop volumineuse, merci de vérifier le fichier d'exclusion."
 fi
 
 # On vérifie que le fichier .gpg-passwd existe bien
