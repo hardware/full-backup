@@ -146,12 +146,15 @@ HOST_ESCP=$(echo $HOST | sed -e 's/[]\/$*.^|[]/\\&/g')
 
 echo ""
 echo -n "Ajout des paramètres de connexion au serveur FTP"
-sed -i -e "s/\(HOST=\).*/\1'$HOST_ESCP'/"       \
-       -e "s/\(USER=\).*/\1'$USER'/"            \
-       -e "s/\(PASSWD=\).*/\1'$PASSWD'/"        \
-       -e "s/\(PORT=\).*/\1$PORT/"              \
-       -e "s/\(NB_MAX_BACKUP=\).*/\1$NBACKUPS/" \
-       -e "s/\(FTP_REMOTE_PATH=\).*/\1'$FTPPATH'/" backup.sh restore.sh
+sed -i -e "s/\(HOST=\).*/\1'$HOST_ESCP'/" \
+       -e "s/\(USER=\).*/\1'$USER'/"      \
+       -e "s/\(PASSWD=\).*/\1'$PASSWD'/"  \
+       -e "s/\(PORT=\).*/\1$PORT/"        \
+       -e "s/\(NB_MAX_BACKUP=\).*/\1$NBACKUPS/" backup.sh restore.sh
+
+if [[ "$FTPPATH" != "/" ]]; then
+    sed -i "s/\(FTP_REMOTE_PATH=\).*/\1'$FTPPATH'/" backup.sh restore.sh
+fi
 
 # Ajout de l'adresse email de reporting
 sed -i "s/\(REPORTING_EMAIL=\).*/\1$EMAIL/" backup.sh restore.sh
