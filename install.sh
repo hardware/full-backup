@@ -138,7 +138,7 @@ if [ "$NBACKUPS" = "" ]; then
 fi
 
 if [ "$FTPPATH" = "" ]; then
-    FTPPATH=""
+    FTPPATH="/"
 fi
 
 # On échappe les caractères spéciaux dans l'URL
