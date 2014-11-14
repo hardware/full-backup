@@ -27,6 +27,7 @@ ERROR_FILE=$BACKUP_FOLDER/errors.log
 FTP_FILE=$BACKUP_FOLDER/ftp.log
 ARCHIVE=$BACKUP_FOLDER/backup-$CDAY.tar.gz
 LOG_FILE=/var/log/backup.log
+FTP_REMOTE_PATH="/"
 
 # Identifiant de la clé GPG
 KEYID=''
@@ -47,7 +48,12 @@ CCYAN="${CSI}0;36m"
 uploadToRemoteServer() {
 
 # La commande ftp n'est pas compatible avec SSL/TLS donc on utilise lftp à la place
-lftp -d -e "lcd $BACKUP_FOLDER;put backup-$CDAY.tar.gz;put backup-$CDAY.tar.gz.sig;put backup-$CDAY.tar.gz.pub; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
+lftp -d -e "cd $FTP_REMOTE_PATH;         \
+            lcd $BACKUP_FOLDER;          \
+            put backup-$CDAY.tar.gz;     \
+            put backup-$CDAY.tar.gz.sig; \
+            put backup-$CDAY.tar.gz.pub; \
+            bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
 
 FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226\(.*\)transfer" | wc -l)
 
@@ -209,9 +215,11 @@ if [ $nbBackup -gt $NB_MAX_BACKUP ]; then
     rm -rf $oldestBackupPath
 
     # Supprime l'archive, le fichier de signature et la clé publique sur le serveur FTP
-    lftp -d -e "rm $oldestBackupFile.tar.gz;bye"     -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
-    lftp -d -e "rm $oldestBackupFile.tar.gz.sig;bye" -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
-    lftp -d -e "rm $oldestBackupFile.tar.gz.pub;bye" -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
+    lftp -d -e "cd $FTP_REMOTE_PATH;             \
+                rm $oldestBackupFile.tar.gz;     \
+                rm $oldestBackupFile.tar.gz.sig; \
+                rm $oldestBackupFile.tar.gz.pub; \
+                bye" -u $USER,$PASSWD -p $PORT $HOST 2>> $FTP_FILE > /dev/null
 
     FILES_REMOVED=$(cat $FTP_FILE | grep -i "250\(.*\)delete" | wc -l)
 

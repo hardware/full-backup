@@ -23,6 +23,7 @@ ERROR_FILE=./errors.log
 FTP_FILE=./ftp.log
 EXIT=0
 ARCHIVE=""
+FTP_REMOTE_PATH="/"
 
 # Définition des variables de couleurs
 CSI="\033["
@@ -66,7 +67,11 @@ downloadFromRemoteServer() {
 
     local archive=$1
 
-    lftp -d -e "get $archive;get $archive.sig;get $archive.pub; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
+    lftp -d -e "cd $FTP_REMOTE_PATH;
+                get $archive;
+                get $archive.sig;
+                get $archive.pub;
+                bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
 
     FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226\(-.*\)file successfully transferred" | wc -l)
 
@@ -163,7 +168,7 @@ remoteRestoration() {
 
     echo -e "\n${CCYAN}Liste des archives disponibles :${CEND}"
     echo -e "${CCYAN}-----------------------------------------------------------------------------------------${CEND}"
-    lftp -d -e "ls *.tar.gz; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE
+    lftp -d -e "cd $FTP_REMOTE_PATH;ls *.tar.gz; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE
     echo -e "${CCYAN}-----------------------------------------------------------------------------------------${CEND}"
     echo ""
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# @(#) Nom du script .. : backup.sh
+# @(#) Nom du script .. : install.sh
 # @(#) Version ........ : 1.00
 # @(#) Date ........... : 19/09/2014
 #      Auteurs ........ : Hardware
@@ -131,9 +131,14 @@ echo -e " ${CGREEN}Connexion au serveur FTP [OK]${CEND}"
 echo ""
 read -p "> Veuillez saisir votre adresse email : " EMAIL
 read -p "> Combien d'archives voulez-vous garder au maximum ? [Par défaut: 10] " NBACKUPS
+read -p "> Saisir le chemin de stockage sur le serveur FTP [Par défaut: / (racine)] " FTPPATH
 
 if [ "$NBACKUPS" = "" ]; then
     NBACKUPS=10
+fi
+
+if [ "$FTPPATH" = "" ]; then
+    FTPPATH=""
 fi
 
 # On échappe les caractères spéciaux dans l'URL
@@ -141,11 +146,12 @@ HOST_ESCP=$(echo $HOST | sed -e 's/[]\/$*.^|[]/\\&/g')
 
 echo ""
 echo -n "Ajout des paramètres de connexion au serveur FTP"
-sed -i -e "s/\(HOST=\).*/\1'$HOST_ESCP'/" \
-       -e "s/\(USER=\).*/\1'$USER'/"      \
-       -e "s/\(PASSWD=\).*/\1'$PASSWD'/"  \
-       -e "s/\(PORT=\).*/\1$PORT/"        \
-       -e "s/\(NB_MAX_BACKUP=\).*/\1$NBACKUPS/" backup.sh restore.sh
+sed -i -e "s/\(HOST=\).*/\1'$HOST_ESCP'/"       \
+       -e "s/\(USER=\).*/\1'$USER'/"            \
+       -e "s/\(PASSWD=\).*/\1'$PASSWD'/"        \
+       -e "s/\(PORT=\).*/\1$PORT/"              \
+       -e "s/\(NB_MAX_BACKUP=\).*/\1$NBACKUPS/" \
+       -e "s/\(FTP_REMOTE_PATH=\).*/\1'$FTPPATH'/" backup.sh restore.sh
 
 # Ajout de l'adresse email de reporting
 sed -i "s/\(REPORTING_EMAIL=\).*/\1$EMAIL/" backup.sh restore.sh
