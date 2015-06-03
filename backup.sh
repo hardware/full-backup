@@ -55,7 +55,7 @@ lftp -d -e "cd $FTP_REMOTE_PATH;         \
             put backup-$CDAY.tar.gz.pub; \
             bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
 
-FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226\(.*\)transfer" | wc -l)
+FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226" | wc -l)
 
 # On vérifie que les 3 fichiers ont bien été transférés
 if [[ $FILES_TRANSFERRED -eq 3 ]]; then
