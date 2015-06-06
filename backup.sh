@@ -58,7 +58,7 @@ lftp -d -e "cd $FTP_REMOTE_PATH;         \
 FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226" | wc -l)
 
 # On vérifie que les 3 fichiers ont bien été transférés
-if [[ $FILES_TRANSFERRED -eq 3 ]]; then
+if [[ $FILES_TRANSFERRED -ge 3 ]]; then
     echo "OK"
 fi
 
