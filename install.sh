@@ -270,7 +270,7 @@ until echo "AuthTest" | gpg --no-use-agent           \
                             --yes                    \
                             --batch                  \
                             --no-tty                 \
-                            --passphrase $KEYPASSWD  \
+                            --passphrase "$KEYPASSWD" \
                             -as - > /dev/null 2>&1
 do
     echo ""
