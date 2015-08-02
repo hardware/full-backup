@@ -7,17 +7,13 @@
 
 ERROR_FILE=./errors.log
 FTP_FILE=./ftp.log
-EXIT=0
 
 CSI="\033["
 CEND="${CSI}0m"
 CRED="${CSI}1;31m"
 CGREEN="${CSI}1;32m"
-CYELLOW="${CSI}1;33m"
-CBLUE="${CSI}1;34m"
 CPURPLE="${CSI}1;35m"
 CCYAN="${CSI}1;36m"
-CBROWN="${CSI}0;33m"
 
 # ##########################################################################
 
@@ -33,7 +29,7 @@ smallLoader() {
     echo -ne '[ + + + + + + + + + ] Appuyez sur [ENTRÉE] pour continuer... \r'
     echo -ne '\n'
 
-    read
+    read -r
 }
 
 # ##########################################################################
@@ -72,7 +68,7 @@ echo ""
 
 apt-get install -y lftp gnupg rng-tools
 
-if [ $? -ne 0 ]; then
+if [[ $? -ne 0 ]]; then
     echo ""
     echo -e "\n ${CRED}/!\ FATAL: Une erreur est survenue pendant l'installation des pré-requis.${CEND}" 1>&2
     echo ""
@@ -89,12 +85,12 @@ echo ""
 
 getCredentials() {
 
-    read -p "> Veuillez saisir l'adresse du serveur ftp : " HOST
-    read -p "> Veuillez saisir le numéro du port [Par défaut: 21] : " PORT
-    read -p "> Veuillez saisir le nom d'utilisateur : " USER
-    read -sp "> Veuillez saisir le mot de passe : " PASSWD
+    read -rp "> Veuillez saisir l'adresse du serveur ftp : " HOST
+    read -rp "> Veuillez saisir le numéro du port [Par défaut: 21] : " PORT
+    read -rp "> Veuillez saisir le nom d'utilisateur : " USER
+    read -srp "> Veuillez saisir le mot de passe : " PASSWD
 
-    if [ "$PORT" = "" ]; then
+    if [[ "$PORT" = "" ]]; then
         PORT=21
     fi
 
@@ -111,11 +107,11 @@ echo "set ssl:verify-certificate false" > ~/.lftprc
 echo -e ""
 echo -n "Test de connexion en cours..."
 
-until lftp -d -e "ls; bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
+until lftp -d -e "ls; bye" -u "$USER","$PASSWD" -p "$PORT" "$HOST" 2> "$FTP_FILE" > /dev/null
 do
-    cat $FTP_FILE | grep -i "150\(.*\)connection"
+    grep -i "150\(.*\)connection" $FTP_FILE
 
-    if [ $? -eq 0 ]; then
+    if [[ $? -eq 0 ]]; then
         break
     fi
 
@@ -129,20 +125,20 @@ done
 echo -e " ${CGREEN}Connexion au serveur FTP [OK]${CEND}"
 
 echo ""
-read -p "> Veuillez saisir votre adresse email : " EMAIL
-read -p "> Combien d'archives voulez-vous garder au maximum ? [Par défaut: 10] " NBACKUPS
-read -p "> Saisir le chemin de stockage sur le serveur FTP [Par défaut: / (racine)] " FTPPATH
+read -rp "> Veuillez saisir votre adresse email : " EMAIL
+read -rp "> Combien d'archives voulez-vous garder au maximum ? [Par défaut: 10] " NBACKUPS
+read -rp "> Saisir le chemin de stockage sur le serveur FTP [Par défaut: / (racine)] " FTPPATH
 
-if [ "$NBACKUPS" = "" ]; then
+if [[ "$NBACKUPS" = "" ]]; then
     NBACKUPS=10
 fi
 
-if [ "$FTPPATH" = "" ]; then
+if [[ "$FTPPATH" = "" ]]; then
     FTPPATH="/"
 fi
 
 # On échappe les caractères spéciaux dans l'URL
-HOST_ESCP=$(echo $HOST | sed -e 's/[]\/$*.^|[]/\\&/g')
+HOST_ESCP=$(echo "$HOST" | sed -e 's/[]\/$*.^|[]/\\&/g')
 
 echo ""
 echo -n "Ajout des paramètres de connexion au serveur FTP"
@@ -168,7 +164,7 @@ echo -e "${CCYAN}[  EXCLUSION DE FICHIERS/RÉPERTOIRES  ]${CEND}"
 echo -e "${CCYAN}---------------------------------------${CEND}"
 echo ""
 
-read -p "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
+read -rp "Voulez-vous exclure des répertoires de la sauvegarde ? (o/n) : " EXCLUDE
 
 # Exclusion des répertoires par défaut
 cat > /opt/full-backup/.excluded-paths <<EOF
@@ -190,7 +186,7 @@ if [[ "$EXCLUDE" = "o" ]] || [[ "$EXCLUDE" = "O" ]]; then
 
     while :
     do
-        read -p "Veuillez saisir le chemin à exclure : " EXCLUDEPATH
+        read -rp "Veuillez saisir le chemin à exclure : " EXCLUDEPATH
 
         if [[ "$EXCLUDEPATH" = "STOP" ]] || [[ "$EXCLUDEPATH" = "stop" ]]; then
             break
@@ -235,7 +231,7 @@ echo -e "${CCYAN}[  CREATION D'UNE PAIRE DE CLE GPG  ]${CEND}"
 echo -e "${CCYAN}-------------------------------------${CEND}"
 echo ""
 
-read -p "Voulez-vous créer une nouvelle paire de clé GPG ? (o/n) : " CREATEKEY
+read -rp "Voulez-vous créer une nouvelle paire de clé GPG ? (o/n) : " CREATEKEY
 
 if [[ "$CREATEKEY" = "o" ]] || [[ "$CREATEKEY" = "O" ]]; then
 
@@ -257,8 +253,8 @@ echo -e "${CCYAN}------------------------------------------${CEND}"
 echo ""
 
 getGPGCredentials() {
-    read  -p "> Veuillez saisir l'identifiant de votre clé (0x...) : " KEYID
-    read -sp "> Veuillez saisir le mot de passe : " KEYPASSWD
+    read  -rp "> Veuillez saisir l'identifiant de votre clé (0x...) : " KEYID
+    read -srp "> Veuillez saisir le mot de passe : " KEYPASSWD
 }
 
 getGPGCredentials
@@ -266,7 +262,7 @@ getGPGCredentials
 # On test la clé et la passphrase
 until echo "AuthTest" | gpg --no-use-agent           \
                             -o /dev/null             \
-                            --local-user $KEYID      \
+                            --local-user "$KEYID"    \
                             --yes                    \
                             --batch                  \
                             --no-tty                 \

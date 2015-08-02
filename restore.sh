@@ -31,15 +31,13 @@ CEND="${CSI}0m"
 CRED="${CSI}1;31m"
 CGREEN="${CSI}1;32m"
 CYELLOW="${CSI}1;33m"
-CBLUE="${CSI}1;34m"
-CPURPLE="${CSI}1;35m"
 CCYAN="${CSI}0;36m"
 
 ##################################################
 
 sendErrorMail() {
 
-SERVER_NAME=`hostname -s`
+SERVER_NAME=$(hostname -s)
 
 echo -e "Subject: ${SERVER_NAME^^} - Echec de la restauration
 Une erreur est survenue lors de l'execution du script de restauration.
@@ -48,15 +46,15 @@ $2
 Detail de l'erreur :
 ----------------------------------------------------------
 
-`cat $1`
+$(cat "$1")
 
 ----------------------------------------------------------
 
 INFO Serveur :
 
-@IP : `hostname -i`
-Hostname : `uname -n`
-Kernel : `uname -r`
+@IP : $(hostname -i)
+Hostname : $(uname -n)
+Kernel : $(uname -r)
 " > /tmp/reporting.txt
 
 sendmail $REPORTING_EMAIL < /tmp/reporting.txt
@@ -67,13 +65,13 @@ downloadFromRemoteServer() {
 
     local archive=$1
 
-    lftp -d -e "cd $FTP_REMOTE_PATH;
-                get $archive;
-                get $archive.sig;
-                get $archive.pub;
+    lftp -d -e "cd $FTP_REMOTE_PATH; \
+                get $archive;        \
+                get $archive.sig;    \
+                get $archive.pub;    \
                 bye" -u $USER,$PASSWD -p $PORT $HOST 2> $FTP_FILE > /dev/null
 
-    FILES_TRANSFERRED=$(cat $FTP_FILE | grep -i "226\(-.*\)file successfully transferred" | wc -l)
+    FILES_TRANSFERRED=$(grep -ci "226\(-.*\)file successfully transferred" "$FTP_FILE")
 
     # On vérifie que les 3 fichiers ont bien été transférés
     if [[ $FILES_TRANSFERRED -ne 3 ]]; then
@@ -112,13 +110,13 @@ checkIntegrity() {
     NB_ATTEMPT=1
 
     echo "> Vérification de l'intégrité"
-    while [[ -z `verifySignature $ARCHIVE.sig` ]]; do
-        if [ "$NB_ATTEMPT" -lt 4 ]; then
+    while [[ -z $(verifySignature $ARCHIVE.sig) ]]; do
+        if [[ "$NB_ATTEMPT" -lt 4 ]]; then
             echo -e "${CRED}/!\ ERREUR: Echec de la vérification de l'intégrité... Tentative $NB_ATTEMPT${CEND}"
             rm -rf $ARCHIVE $ARCHIVE.sig $ARCHIVE.pub
             downloadFromRemoteServer $ARCHIVE
 
-            if [[ -n `verifySignature $ARCHIVE.sig` ]]; then
+            if [[ -n $(verifySignature $ARCHIVE.sig) ]]; then
                 break
             fi
 
@@ -138,7 +136,7 @@ backupList() {
     local i=0
     local n=""
 
-    if [ ! -d /var/backup/local ]; then
+    if [[ ! -d /var/backup/local ]]; then
         echo -e "\n${CRED}/!\ ERREUR: Aucune sauvegarde locale existante.${CEND}\n" 1>&2
         exit 1
     fi
@@ -147,12 +145,12 @@ backupList() {
 
     for backup in ${backups[*]}; do
         let "i += 1"
-        BACKUPPATH[$i]=$(stat -c "%n" $backup)
+        BACKUPPATH[$i]=$(stat -c "%n" "$backup")
         echo "   $i. ${BACKUPPATH[$i]##*/}"
     done
 
     echo ""
-    read -p "Saisir le numéro de l’archive à restaurer : " n
+    read -rp "Saisir le numéro de l’archive à restaurer : " n
 
     if [[ $n -lt 1 ]] || [[ $n -gt $i ]]; then
         echo -e "\n${CRED}/!\ ERREUR: Numéro d'archive invalide !${CEND}"
@@ -172,7 +170,7 @@ remoteRestoration() {
     echo -e "${CCYAN}-----------------------------------------------------------------------------------------${CEND}"
     echo ""
 
-    read -p "Veuillez saisir le nom de l'archive à récupérer : " ARCHIVE
+    read -rp "Veuillez saisir le nom de l'archive à récupérer : " ARCHIVE
 
     echo ""
     echo -e "${CRED}-------------------------------------------------------${CEND}"
@@ -180,10 +178,10 @@ remoteRestoration() {
     echo -e "${CRED}-------------------------------------------------------${CEND}"
 
     echo -e "\nAppuyer sur ${CCYAN}[ENTREE]${CEND} pour démarrer la restauration ou CTRL+C pour quitter..."
-    read
+    read -r
 
     echo "> Récupération de l'archive depuis le serveur FTP"
-    downloadFromRemoteServer $ARCHIVE
+    downloadFromRemoteServer "$ARCHIVE"
 
     checkIntegrity
 
@@ -197,10 +195,10 @@ localRestoration() {
     echo -e "${CRED}-------------------------------------------------------${CEND}"
 
     echo -e "\nAppuyer sur ${CCYAN}[ENTREE]${CEND} pour démarrer la restauration ou CTRL+C pour quitter..."
-    read
+    read -r
 
     echo "> Récupération de l'archive locale"
-    cp /var/backup/local/${ARCHIVEPATH}/*.tar.gz* .
+    cp /var/backup/local/"$ARCHIVEPATH"/*.tar.gz* .
 
     checkIntegrity
 
@@ -232,7 +230,7 @@ echo ""
 
 while [[ $EXIT -eq 0 ]]; do
 
-    read -p "Votre choix (1-2) : " RTYPE
+    read -rp "Votre choix (1-2) : " RTYPE
 
     case "$RTYPE" in
     "1")
@@ -254,9 +252,9 @@ while [[ $EXIT -eq 0 ]]; do
 done
 
 echo "> Décompression de l'archive à la racine du système"
-tar --warning=none -xpPzf $ARCHIVE --exclude=/boot -C / --numeric-owner 2> $ERROR_FILE
+tar --warning=none -xpPzf "$ARCHIVE" --exclude=/boot -C / --numeric-owner 2> $ERROR_FILE
 
-if [ -s $ERROR_FILE ]; then
+if [[ -s $ERROR_FILE ]]; then
     echo -e "\n${CRED}/!\ ERREUR: Echec de la décompression de l'archive.${CEND}"
     echo -e ""
     sendErrorMail $ERROR_FILE "Echec de la décompression de l'archive."
@@ -278,9 +276,9 @@ fi
 echo ""
 echo -e "${CGREEN}> Restauration effectuée !${CEND}"
 
-rm -rf $ARCHIVE
-rm -rf $ARCHIVE.pub
-rm -rf $ARCHIVE.sig
+rm -rf "$ARCHIVE"
+rm -rf "$ARCHIVE".pub
+rm -rf "$ARCHIVE".sig
 rm -rf $ERROR_FILE
 rm -rf $FTP_FILE
 
@@ -290,7 +288,7 @@ echo -e "${CGREEN}peut-être que vous souhaitez modifier certains fichiers (/etc
 echo -e "${CGREEN}nécessaires pour que le serveur redémarre correctement.${CEND}"
 echo ""
 
-read -p "Voulez-vous redémarrer maintenant ? (o/n) " REBOOTNOW
+read -rp "Voulez-vous redémarrer maintenant ? (o/n) " REBOOTNOW
 
 if [[ "$REBOOTNOW" != "o" ]] || [[ "$REBOOTNOW" != "O" ]]; then
 
