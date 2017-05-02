@@ -204,7 +204,7 @@ nbBackup=$(find $BACKUP_PARTITION -type d -name 'backup-*' | wc -l)
 if [[ "$nbBackup" -gt $NB_MAX_BACKUP ]]; then
 
     # Recherche l'archive la plus ancienne
-    oldestBackupPath=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1)
+    oldestBackupPath=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1)| awk '{print $2}')
     oldestBackupFile=$(find $BACKUP_PARTITION -type d -name 'backup-*' -printf '%T+ %p\n' | sort | head -n 1 | awk '{split($0,a,/\//); print a[5]}')
 
     echo -en "> Suppression de l'archive la plus ancienne (${CPURPLE}$oldestBackupFile.tar.gz${CEND})" | tee -a $LOG_FILE
@@ -219,7 +219,7 @@ if [[ "$nbBackup" -gt $NB_MAX_BACKUP ]]; then
                 rm $oldestBackupFile.tar.gz.pub; \
                 bye" -u $USER,$PASSWD -p $PORT $HOST 2>> "$FTP_FILE" > /dev/null
 
-    FILES_REMOVED=$(grep -ci "250\(.*\)delete" "$FTP_FILE")
+    FILES_REMOVED=$(grep -ci "250\(.*\)dele" "$FTP_FILE")
 
     # On vérifie que les 3 fichiers ont bien été supprimés
     if [[ "$FILES_REMOVED" -ne 3 ]]; then
