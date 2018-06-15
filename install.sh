@@ -67,6 +67,7 @@ echo -e "${CGREEN}-> Installation de LFTP, GnuPG et rng-tools ${CEND}"
 echo ""
 
 apt-get install -y lftp gnupg rng-tools
+export GPG_TTY=$(tty)
 
 if [[ $? -ne 0 ]]; then
     echo ""
@@ -260,14 +261,7 @@ getGPGCredentials() {
 getGPGCredentials
 
 # On test la clé et la passphrase
-until echo "AuthTest" | gpg --no-use-agent           \
-                            -o /dev/null             \
-                            --local-user "$KEYID"    \
-                            --yes                    \
-                            --batch                  \
-                            --no-tty                 \
-                            --passphrase "$KEYPASSWD" \
-                            -as - > /dev/null 2>&1
+until echo "AuthTest" | gpg -o /dev/null --local-user "$KEYID" -as --passphrase "$KEYPASSWD" <(echo)
 do
     echo ""
     echo -e "${CRED}/!\ Erreur: Clé inconnue ou mot de passe incorrect.${CEND}" 1>&2
